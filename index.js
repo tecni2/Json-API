@@ -34,11 +34,17 @@ app.put("/tasks", async (req, res) => {
   let tasks = JSON.parse(await fs.readFile(tasksPath, "utf8"));
 
   const newTask = req.body;
-  tasks.find(task => task.id == newTask.id).status = newTask.status;
 
-  await fs.writeFile(tasksPath, JSON.stringify(tasks));
+  if (newTask.id && newTask.status) {
 
-  res.end();
+    tasks.find(task => task.id == newTask.id).status = newTask.status;
+
+    await fs.writeFile(tasksPath, JSON.stringify(tasks));
+
+    res.end();
+  } else {
+    res.end("Se necesita el id y el status para actualizar la tarea")
+  }
 });
 
 app.delete("/tasks", async (req, res) => {
@@ -46,11 +52,17 @@ app.delete("/tasks", async (req, res) => {
   let tasks = JSON.parse(await fs.readFile(tasksPath, "utf8"));
 
   const newTask = req.body;
-  tasks = tasks.filter(task => task.id != newTask.id)
 
-  await fs.writeFile(tasksPath, JSON.stringify(tasks));
+  if (tasks.id) {
 
-  res.end();
+    tasks = tasks.filter(task => task.id != newTask.id)
+
+    await fs.writeFile(tasksPath, JSON.stringify(tasks));
+
+    res.end();
+  } else {
+    res.end("Se necesita el id para eliminar la tarea")
+  }
 })
 
 app.listen(PORT);
